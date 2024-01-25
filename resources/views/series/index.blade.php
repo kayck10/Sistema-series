@@ -5,14 +5,16 @@
 
         @foreach ($series as $key => $serie)
             <li class="list-group-item d-flex justify-content-between align-items-center">
-                <a style="text-decoration: none; color:black" href="{{ route('seasons.index', $key) }}">
-                    {{ $serie }}
+
+                <img src="{{ asset('storage/' . $serie->cover) }}" width="100px" class="img-thumbnail">
+                <a style="text-decoration: none; color:black" href="{{ route('seasons.index', $serie->id) }}">
+                    {{ $serie->nome }}
                 </a>
                 <span class="d-flex">
-                    <a class="btn btn-primary-sm" href="{{ route('series.edit', $key) }}">
+                    <a class="btn btn-primary-sm" href="{{ route('series.edit', $serie->id) }}">
                         <i class="bi bi-pencil-square"></i>
                     </a>
-                    <form action="{{ route('series.destroy', $key) }}" method="post">
+                    <form action="{{ route('series.destroy', $serie->id) }}" method="post">
                         @method('DELETE')
                         @csrf
                         <button class="btn btn-danger">

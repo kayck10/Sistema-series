@@ -3,29 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SeriesFormRequest;
-use App\Models\Episode;
-use App\Models\Season;
 use App\Models\Series;
-use App\Repositories\EloquentSeriesRepository;
 use App\Repositories\SeriesRepository;
-use Illuminate\Contracts\Session\Session;
+use File;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+
 
 class SeriesController extends Controller
 {
 
     public function __construct(private SeriesRepository $repository)
     {
-
     }
 
     public function index(Request $request)
     {
 
         $series = Series::with(['seasons'])->get();
-        $series = Series::orderBy('nome', 'asc')->get()->pluck('nome', 'id');
+        $series = Series::orderBy('nome', 'asc')->get();
         $mensagemExclui = $request->session()->get('mensagem.apagado');
         $mensagemSucesso = $request->session()->get('mensagem.sucesso');
         return view(
@@ -40,16 +35,26 @@ class SeriesController extends Controller
 
     public function store(SeriesFormRequest $request)
     {
-
-        $serie = $this->repository->add($request);
-
-        return redirect()->route('series.index')
-            ->with('mensagem.sucesso', "Série '{$request->nome}' Adicionada com sucesso");
+        $coverPath = $request->hasFile ('cover')
+            ? $request->file('cover')->store('series_cover','public')
+            :null;
+      $request->coverPath = $coverPath;
+      $serie = $this->repository->add($request);
+      $ultimaSerie = Series::orderBy('id', 'desc')->get()->first();
+        \App\Events\SeriesCreated::dispatch(
+            (string)$request->nome,
+            (int)$ultimaSerie->id,
+            (int)$request->seasonsQty,
+            (int)$request->episodesPerseason
+        );
+        return to_route('series.index')
+            ->with('mensagem.sucesso', "Série '{$request->nome}' adicionada com sucesso");
     }
 
     public function delete(Series $series, Request $request)
     {
 
+        File::delete('storage/' . $series->cover);
         $series->delete();
 
         return redirect()->back()

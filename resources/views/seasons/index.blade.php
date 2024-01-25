@@ -1,6 +1,10 @@
 @extends('layout.layout')
 
 @section('conteudo')
+    <div class="text-center">
+
+        <img src="{{ asset('storage/' . $series->cover) }}" style="height: 200px" alt="Imagem Capa" class="img-fluid">
+    </div>
     <ul class="list-group col-4 mx-auto mt-5">
         @csrf
         <h2 class="mb-3">Temporadas de {{ $series->nome }}</h2>

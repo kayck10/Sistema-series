@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @section('conteudo')
-    <form action="{{ route('series.store') }}" method="POST" :nome="old('nome')">
+    <form action="{{ route('series.store') }}" method="POST" :nome="old('nome')" enctype="multipart/form-data">
 
         <h3 class="ms-5 mt-5">Adicionar Série</h3>
         @csrf
@@ -23,6 +23,13 @@
                     <label class="form-label" for="form8Example5">Episódios:</label>
                     <input type="text" name="episodesPerseason" id="form8Example5" class="form-control" />
                 </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="cover" class="form-label">Capa</label>
+                <input type="file" id="cover" name="cover" class="form-control"
+                    accept="image/gif, image/jpeg, image/png">
             </div>
         </div>
         <div class="d-grid gap-3 col-4 mx-auto">
